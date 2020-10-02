@@ -3,8 +3,8 @@ import matplotlib.pyplot as plt
 import time
 
 WINDOW_LEN = 10
-MAX_ROUNDS = 10000
-p = .0002
+MAX_ROUNDS = 100
+p = .02
 n = 1000
 
 num_blocks_mined_total = 1
@@ -111,11 +111,14 @@ def main():
 			mine_block(i, longest_chains, tie_break_by_random, r)
 		consensus_height_by_round[r] = max_convergence_height
 		if new_blocks_produced == 1:
-			rounds_interval_only_one_node_mine.append(r - prev_round_only_one_node_mined)
+			rounds_interval_osnly_one_node_mine.append(r - prev_round_only_one_node_mined)
 			prev_round_only_one_node_mined = r
 			# print("only one block mined at round ", r)
 		new_blocks_produced = 0
-	print("average number of rounds it takes until only one node mines: ", sum(rounds_interval_only_one_node_mine) / len(rounds_interval_only_one_node_mine))
+	if len(rounds_interval_only_one_node_mine) == 0:
+		print("There was never a round where only one node mined")
+	else:
+		print("average number of rounds it takes until only one node mines: ", sum(rounds_interval_only_one_node_mine) / len(rounds_interval_only_one_node_mine))
 	print("total number of blocks mined: ", num_blocks_mined_total)
 	print("number of blocks in consensus: ", max_convergence_height)
 	print("percentage discarded: ", 1 - max_convergence_height / num_blocks_mined_total)
