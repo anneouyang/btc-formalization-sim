@@ -3,10 +3,10 @@ import matplotlib.pyplot as plt
 import time
 import secrets
 
-WINDOW_LEN = 100
+WINDOW_LEN = 1000
 MAX_ROUNDS = 1000
 p = .1
-n = 100
+n = 1000
 # nodes indexed from 0 to n-1 inclusive
 
 num_blocks_mined_total = 1
