@@ -5,8 +5,8 @@ import secrets
 
 WINDOW_LEN = 100
 MAX_ROUNDS = 1000
-p = .1
-n = 100
+p = .01
+n = 1000
 # nodes indexed from 0 to n-1 inclusive
 
 num_blocks_mined_total = 1
@@ -64,10 +64,10 @@ def update_longest_chain(node_id, longest_chains, tie_breaking_function, r):
 		del nodes[node_id]['blocks'][h]
 	# update blocks in the window range
 	min_lim = max(cur_height - WINDOW_LEN, 1)
-	while cur_height > min_lim:
-		nodes[node_id]['blocks'][cur_height - 1] = blocks[cur_block][1]
-		cur_block = blocks[cur_block][1]
-		cur_height -= 1
+	# while cur_height > min_lim:
+	# 	nodes[node_id]['blocks'][cur_height - 1] = blocks[cur_block][1]
+	# 	cur_block = blocks[cur_block][1]
+	# 	cur_height -= 1
 
 
 def mine_block(node_id, longest_chains, tie_breaking_function, r):
@@ -85,25 +85,42 @@ def mine_block(node_id, longest_chains, tie_breaking_function, r):
 	nodes[node_id]['height'] = blocks[new_block_id][0]
 	
 
+# def check_for_convergence():
+# 	global max_convergence_height
+# 	cur_conv_height = max_convergence_height + 1
+# 	while True:
+# 		conv_block_id = -1
+# 		for i in range(0, n):
+# 			if cur_conv_height not in nodes[i]['blocks']:
+# 				return
+# 			if conv_block_id == -1:
+# 				conv_block_id = nodes[i]['blocks'][cur_conv_height]
+# 			if conv_block_id != nodes[i]['blocks'][cur_conv_height]:
+# 				return
+# 		if conv_block_id == -1:
+# 			return
+# 		print("height", str(cur_conv_height))
+# 		for i in range(n):
+# 			print(nodes[i]['blocks'])
+# 		max_convergence_height = cur_conv_height
+# 		cur_conv_height += 1
+
 def check_for_convergence():
 	global max_convergence_height
-	cur_conv_height = max_convergence_height + 1
-	while True:
-		conv_block_id = -1
-		for i in range(0, n):
-			if cur_conv_height not in nodes[i]['blocks']:
-				return
-			if conv_block_id == -1:
-				conv_block_id = nodes[i]['blocks'][cur_conv_height]
-			if conv_block_id != nodes[i]['blocks'][cur_conv_height]:
-				return
-		if conv_block_id == -1:
+	conv_block_id = -1
+	cur_max_chain_height = 0
+	for i in range(n):
+		cur_max_chain_height = max(cur_max_chain_height, nodes[i]['height'])
+	for i in range(0, n):
+		if cur_max_chain_height not in nodes[i]['blocks']:
 			return
-		# print("height", str(cur_conv_height))
-		# for i in range(n):
-		# 	print(nodes[i]['blocks'])
-		max_convergence_height = cur_conv_height
-		cur_conv_height += 1
+		if conv_block_id == -1:
+			conv_block_id = nodes[i]['blocks'][cur_max_chain_height]
+		if conv_block_id != nodes[i]['blocks'][cur_max_chain_height]:
+			return
+	if conv_block_id == -1:
+		return
+	max_convergence_height = cur_max_chain_height
 
 
 nb = []
@@ -118,7 +135,6 @@ def main():
 			print("round ", r, "of", MAX_ROUNDS)
 			# print(len(longest_chains))
 		for i in range(n):
-			# update_longest_chain(i, longest_chains, tie_break_by_random, r)
 			update_longest_chain(i, longest_chains, tie_break_by_first_seen, r)
 		check_for_convergence()
 		consensus_height_by_round[r] = max_convergence_height
