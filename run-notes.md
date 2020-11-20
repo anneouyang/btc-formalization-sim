@@ -66,3 +66,16 @@ percentage discarded:  0.9922189106474907
 
 ![figure 4](./fig4.png)
 
+
+
+
+
+- p in practice?
+  - 1 block / 10 min
+  - 2^70 hashes / 10 min
+
+
+
+- benefit of random choice
+  - smaller and more frequent jumps?
+

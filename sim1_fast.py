@@ -26,6 +26,9 @@ consensus_height_by_round = [0 for i in range(MAX_ROUNDS + 1)]
 
 rounds_interval_only_one_node_mine = []
 
+# for the fast path of assigning IDs to prevent getting the LCA in every rounds
+fast_path_id = {}
+cur_lca = 1
 
 def get_longest_chains():
 	longest_chain_height = 0
@@ -83,7 +86,11 @@ def mine_block(node_id, longest_chains, tie_breaking_function, r):
 	blocks[new_block_id] = (blocks[block_to_mine_on][0] + 1, block_to_mine_on, node_id, r)
 	nodes[node_id]['blocks'][blocks[new_block_id][0]] = new_block_id
 	nodes[node_id]['height'] = blocks[new_block_id][0]
-	
+
+
+
+def reassign_ids():
+	pass
 
 def check_for_convergence():
 	global max_convergence_height
@@ -111,10 +118,9 @@ nb = []
 def main():
 	global new_blocks_produced
 	prev_round_only_one_node_mined = 1
-	random.seed(0)
+	random.seed(time.time())
 	for r in range(1, MAX_ROUNDS + 1):
 		longest_chains = get_longest_chains()
-		# print(blocks)
 		if (r % 100 == 0):
 			print("round ", r, "of", MAX_ROUNDS)
 			# print(len(longest_chains))
@@ -142,12 +148,11 @@ def main():
 	print("total number of blocks mined: ", num_blocks_mined_total)
 	print("number of blocks in consensus: ", max_convergence_height)
 	print("percentage discarded: ", 1 - max_convergence_height / num_blocks_mined_total)
-
 	# for i in range(n):
 	# 	print(nodes[i]['blocks'])
-	plt.plot(range(1, MAX_ROUNDS + 1), consensus_height_by_round[1:])
+	# plt.plot(range(1, MAX_ROUNDS + 1), consensus_height_by_round[1:])
 	# plt.plot(range(1, MAX_ROUNDS + 1), nb[0:])
-	plt.show()
+	# plt.show()
 
 if __name__ == '__main__':
 	main()
